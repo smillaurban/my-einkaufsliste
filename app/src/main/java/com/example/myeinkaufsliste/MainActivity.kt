@@ -1,20 +1,23 @@
 package com.example.myeinkaufsliste
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.text.InputType
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.ListView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
 import com.example.myeinkaufsliste.databinding.ActivityMainBinding
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var lvTodoList : ListView
+    private lateinit var fab : FloatingActionButton
+    private lateinit var shoppingItems : ArrayList<String>
+    private lateinit var itemAdapter : ArrayAdapter<String>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,38 +25,34 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        lvTodoList = findViewById(R.id.lvTodoList)
+        fab = findViewById(R.id.floatingActionButton)
+        shoppingItems = ArrayList()
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
+        shoppingItems.add("Apfel")
+        shoppingItems.add("Banane")
+        shoppingItems.add("Mango")
+
+
+        itemAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, shoppingItems)
+        lvTodoList.adapter = itemAdapter
+
+        fab.setOnClickListener{
+            var builder = AlertDialog.Builder(this)
+            builder.setTitle("Hinzufügen")
+
+            var input = EditText(this)
+            input.hint = "Text eingeben"
+            input.inputType = InputType.TYPE_CLASS_TEXT
+            builder.setView(input)
+
+            builder.setPositiveButton("OK") { dialog, which ->
+                shoppingItems.add(input.text.toString())
+            }
+
+            builder.show()
         }
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
     }
 }
